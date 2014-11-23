@@ -17,6 +17,14 @@ void main(void) {
 
 	initMSP430();				// Setup MSP to process IR and buttons
 
+	//Set P2.0 and 2.1 high
+	P2OUT |= BIT0 | BIT1;
+
+	//Set P2.0 and 2.2 low
+	//P2OUT &= ~BIT0 & ~BIT1;
+
+
+
 	while(1)  {
 
 		if (newIrPacket) {	//Got a new packet!
@@ -26,9 +34,11 @@ void main(void) {
 
 			if(IS_ONE){//if(packetBits == ONE){
 				P1OUT ^= BIT0;		//Alternate the Red LED
+				RIGHT_FORWARD;
 			}
 			else if(IS_TWO){//else if(packetBits == TWO){
 				P1OUT ^= BIT6;		//Alternate the Green LED
+				RIGHT_BACKWARD;
 			}
 
 			_enable_interrupt();
@@ -36,6 +46,11 @@ void main(void) {
 		} // end if new IR packet arrived
 	} // end infinite loop
 } // end main
+
+void goForward(){
+
+}
+
 
 // -----------------------------------------------------------------------
 // In order to decode IR packets, the MSP430 needs to be configured to
@@ -65,18 +80,34 @@ void initMSP430() {
 	P2IE  |= BIT6;						// Enable PORT 2 interrupt on pin change
 
 	//Enable Outputs on Motor Output Pins
-	P2DIR |= LEFT_MOTOR_POS;
-	P2DIR |= LEFT_MOTOR_NEG;
-	P2DIR |= RIGHT_MOTOR_POS;
-	P2DIR |= RIGHT_MOTOR_NEG;
+//	P2DIR |= LEFT_MOTOR_POS;
+//	P2DIR |= LEFT_MOTOR_NEG;
+//	P2DIR |= RIGHT_MOTOR_POS;
+//	P2DIR |= RIGHT_MOTOR_NEG;
+
+	//Enable Motor Outputs
+	P2DIR |= BIT0 | BIT1;			//Right Motor Enable and Direction
 	
 	//Enable the LEDs and turn them on (so I can see that the MSP is working)
 	P1DIR |= BIT0 | BIT6;				// Enable updates to the LED
 	P1OUT |= (BIT0 | BIT6);			// And turn the LEDa on
 
+	//Setup Timer A0
 	TA0CCR0 = 0x8000;					// create a 16mS roll-over period
-	TACTL &= ~TAIFG;					// clear flag before enabling interrupts = good practice
-	TACTL = ID_3 | TASSEL_2 | MC_1;		// Use 1:1 presclar off MCLK and enable interrupts
+	TA0CTL &= ~TAIFG;					// clear flag before enabling interrupts = good practice
+	TA0CTL = ID_3 | TASSEL_2 | MC_1;		// Use 1:1 presclar off MCLK and enable interrupts
+
+	//Setup Timer A1 and PWM
+    P2DIR |= BIT2;							// P2.2 is associated with TA1CCR1
+    P2SEL |= BIT2;							// P2.2 is associated with TA1CCTL1
+    P2DIR |= BIT4;							// P2.4 is associated with TA1CCR2
+    P2SEL |= BIT4;							// P2.4 is associated with TA1CCTL2
+	TA1CTL = ID_3 | TASSEL_2 | MC_1;		// Use 1:8 presclar off MCLK
+    TA1CCR0 = 0x0050; //0x0100;						// set signal period
+    TA1CCR1 = 0x0020;
+    TA1CCTL1 = OUTMOD_7;					// set TACCTL1 to Reset / Set mode
+    TA1CCR2 = 0x0020;
+    TA1CCTL2 = OUTMOD_7;					// set TACCTL1 to Reset / Set mode
 
 	HIGH_2_LOW; 						// Setup pin interrupr on positive edge
 
@@ -142,14 +173,14 @@ __interrupt void pinChange (void) {
 		// Otherwise Ignore the bit
 
 		//Turn off Timer A
-		TACTL &= ~MC_0;
+		TA0CTL &= ~MC_0;
 
 		LOW_2_HIGH; 				// Setup pin interrupr on positive edge
 		break;
 
 	case 1:							// !!!!!!!!POSITIVE EDGE!!!!!!!!!!!
 		//Turn on Timer A
-		TACTL |= MC_1;
+		TA0CTL |= MC_1;
 
 		//Enable Interrupt for timer A
 		P2IE |= ID_3;
@@ -176,7 +207,7 @@ __interrupt void pinChange (void) {
 #pragma vector = TIMER0_A1_VECTOR			// This is from the MSP430G2553.h file
 __interrupt void timerOverflow (void) {
 	//Turn off Timer A
-	TACTL &= ~MC_0;
+	TA0CTL &= ~MC_0;
 
 	//Disable Interrupt for timer A
 	_disable_interrupt();
@@ -188,5 +219,5 @@ __interrupt void timerOverflow (void) {
 	newIrPacket = TRUE;
 
 	//Clear TAIFG
-	TACTL &= ~TAIFG;
+	TA0CTL &= ~TAIFG;
 }

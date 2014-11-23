@@ -28,12 +28,20 @@ __interrupt void timerOverflow (void);
 
 
 //-----------------------------------------------------------------
-// Constants for the Motor Pins
+// Define Macros Here for Self Commenting Code
+// This setup uses software to reverse the direction of the 2nd motor
 //-----------------------------------------------------------------
-#define		LEFT_MOTOR_POS		BIT0
-#define		LEFT_MOTOR_NEG		BIT1
-#define		RIGHT_MOTOR_POS		BIT2
-#define		RIGHT_MOTOR_NEG		BIT3
+#define		RIGHT_DIRECTION		BIT1;
+#define		RIGHT_ENABLE		BIT0;
+
+#define		LEFT_DIRECTION		BIT5;
+#define		LEFT_ENABLE			BIT3;
+#define		LEFT_PWM			BIT4;
+
+//#define		LEFT_FORWARD	P2OUT |= BIT0;
+//#define		LEFT_BACKWARD	P2OUT &= ~BIT0;
+#define		RIGHT_FORWARD	P2OUT &= ~RIGHT_DIRECTION;
+#define		RIGHT_BACKWARD	P2OUT |= RIGHT_DIRECTION;
 
 //-----------------------------------------------------------------
 // Each PxIES bit selects the interrupt edge for the corresponding I/O pin.
