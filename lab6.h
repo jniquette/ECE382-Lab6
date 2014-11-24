@@ -8,6 +8,12 @@
 #ifndef LAB6_H_
 #define LAB6_H_
 
+//----Method Declarations---
+void rightForward();
+void rightBackward();
+void leftForward();
+void leftBackward();
+
 //-----------------------------------------------------------------
 // Page 76 : MSP430 Optimizing C/C++ Compiler v 4.3 User's Guide
 //-----------------------------------------------------------------
@@ -40,8 +46,13 @@ __interrupt void timerOverflow (void);
 
 //#define		LEFT_FORWARD	P2OUT |= BIT0;
 //#define		LEFT_BACKWARD	P2OUT &= ~BIT0;
+#define		ENABLE_RIGHT	P2OUT |= RIGHT_ENABLE;
 #define		RIGHT_FORWARD	P2OUT &= ~RIGHT_DIRECTION;
 #define		RIGHT_BACKWARD	P2OUT |= RIGHT_DIRECTION;
+
+#define		ENABLE_LEFT		P2OUT |= LEFT_ENABLE;
+#define		LEFT_FORWARD	P2OUT |= LEFT_DIRECTION;
+#define		LEFT_BACKWARD	P2OUT &= ~LEFT_DIRECTION;
 
 //-----------------------------------------------------------------
 // Each PxIES bit selects the interrupt edge for the corresponding I/O pin.

@@ -17,11 +17,8 @@ void main(void) {
 
 	initMSP430();				// Setup MSP to process IR and buttons
 
-	//Set P2.0 and 2.1 high
-	P2OUT |= BIT0 | BIT1;
 
-	//Set P2.0 and 2.2 low
-	//P2OUT &= ~BIT0 & ~BIT1;
+
 
 
 
@@ -33,12 +30,12 @@ void main(void) {
 			packetIndex = 0;
 
 			if(IS_ONE){//if(packetBits == ONE){
-				P1OUT ^= BIT0;		//Alternate the Red LED
-				RIGHT_FORWARD;
+				rightForward();
+				leftForward();
 			}
 			else if(IS_TWO){//else if(packetBits == TWO){
-				P1OUT ^= BIT6;		//Alternate the Green LED
-				RIGHT_BACKWARD;
+				rightBackward();
+				leftBackward();
 			}
 
 			_enable_interrupt();
@@ -47,8 +44,32 @@ void main(void) {
 	} // end infinite loop
 } // end main
 
-void goForward(){
+void rightForward(){
+	P1OUT |= BIT6;		//Green On
+	RIGHT_FORWARD;
+	ENABLE_RIGHT;
+	TA1CCTL1 = OUTMOD_3;
+}
 
+void rightBackward(){
+	P1OUT &= ~BIT6;		//Green Off
+	RIGHT_BACKWARD;
+	ENABLE_RIGHT;
+	TA1CCTL1 = OUTMOD_7;
+}
+
+void leftForward(){
+	P1OUT |= BIT0;		//Red On
+	LEFT_FORWARD;
+	ENABLE_LEFT;
+	TA1CCTL2 = OUTMOD_7;
+}
+
+void leftBackward(){
+	P1OUT &= ~BIT0;		//Red Off
+	LEFT_BACKWARD;
+	ENABLE_LEFT;
+	TA1CCTL2 = OUTMOD_3;
 }
 
 
@@ -103,9 +124,9 @@ void initMSP430() {
     P2DIR |= BIT4;							// P2.4 is associated with TA1CCR2
     P2SEL |= BIT4;							// P2.4 is associated with TA1CCTL2
 	TA1CTL = ID_3 | TASSEL_2 | MC_1;		// Use 1:8 presclar off MCLK
-    TA1CCR0 = 0x0050; //0x0100;						// set signal period
+    TA1CCR0 = 0x0100;						// set signal period
     TA1CCR1 = 0x0020;
-    TA1CCTL1 = OUTMOD_7;					// set TACCTL1 to Reset / Set mode
+    TA1CCTL1 = OUTMOD_7;				// set TACCTL1 to Reset / Set mode
     TA1CCR2 = 0x0020;
     TA1CCTL2 = OUTMOD_7;					// set TACCTL1 to Reset / Set mode
 
