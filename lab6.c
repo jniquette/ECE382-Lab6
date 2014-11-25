@@ -55,6 +55,12 @@ void stepForward(){
 	stop();
 }
 
+void stepBackward(){
+	goBackward();
+	__delay_cycles(2000000);
+	stop();
+}
+
 void stepRight(){
 	turnRight();
 	__delay_cycles(2000000);
@@ -117,10 +123,15 @@ void leftBackward(){
 
 void reqFunctionality(){
 	stepForward();
+	__delay_cycles(16000000);
 	stepBackward();
+	__delay_cycles(16000000);
 	stepRight();
+	__delay_cycles(16000000);
 	stepLeft();
+	__delay_cycles(16000000);
 	stepForward();
+	__delay_cycles(16000000);
 	stepBackward();
 }
 
@@ -160,6 +171,7 @@ void initMSP430() {
 
 	//Enable Motor Outputs
 	P2DIR |= BIT0 | BIT1;			//Right Motor Enable and Direction
+	P2DIR |= BIT3 | BIT5;			//Right Motor Enable and Direction
 	
 	//Enable the LEDs and turn them on (so I can see that the MSP is working)
 	P1DIR |= BIT0 | BIT6;				// Enable updates to the LED
@@ -177,9 +189,9 @@ void initMSP430() {
     P2SEL |= BIT4;							// P2.4 is associated with TA1CCTL2
 	TA1CTL = ID_3 | TASSEL_2 | MC_1;		// Use 1:8 presclar off MCLK
     TA1CCR0 = 0x0100;						// set signal period
-    TA1CCR1 = 0x0020;
+    TA1CCR1 = 0x0008;//20;
     TA1CCTL1 = OUTMOD_7;				// set TACCTL1 to Reset / Set mode
-    TA1CCR2 = 0x0020;
+    TA1CCR2 = 0x0008;//20;
     TA1CCTL2 = OUTMOD_7;					// set TACCTL1 to Reset / Set mode
 
 	HIGH_2_LOW; 						// Setup pin interrupr on positive edge
