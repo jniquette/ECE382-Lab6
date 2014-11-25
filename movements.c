@@ -4,6 +4,8 @@
 void stop(){
 	DISABLE_RIGHT;
 	DISABLE_LEFT;
+	P1OUT &= ~BIT6;			//Turn Off LEDs
+	P1OUT &= ~BIT0;
 }
 
 void stepForward(){
@@ -76,6 +78,30 @@ void leftBackward(){
 	LEFT_BACKWARD;
 	ENABLE_LEFT;
 	TA1CCTL2 = OUTMOD_3;
+}
+
+void pivotForwardLeft(){
+	rightForward();
+	__delay_cycles(2600000);
+	stop();
+}
+
+void pivotForwardRight(){
+	leftForward();
+	__delay_cycles(2600000);
+	stop();
+}
+
+void pivotBackwardLeft(){
+	rightBackward();
+	__delay_cycles(3800000);
+	stop();
+}
+
+void pivotBackwardRight(){
+	leftBackward();
+	__delay_cycles(3800000);
+	stop();
 }
 
 void reqFunctionality(){

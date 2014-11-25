@@ -23,6 +23,10 @@ void rightBackward();
 void leftForward();
 void leftBackward();
 void reqFunctionality();
+void pivotForwardLeft();
+void pivotForwardRight();
+void pivotBackwardLeft();
+void pivotBackwardRight();
 
 //-----------------------------------------------------------------
 // Page 76 : MSP430 Optimizing C/C++ Compiler v 4.3 User's Guide
@@ -36,7 +40,7 @@ typedef		unsigned long long	int64;
 #define		FALSE				0
 
 //-----------------------------------------------------------------
-// Function prototypes found in lab5.c
+// Function prototypes found in lab6.c - Used for remote control
 //-----------------------------------------------------------------
 void initMSP430();
 __interrupt void pinChange (void);
@@ -49,22 +53,23 @@ __interrupt void timerOverflow (void);
 //-----------------------------------------------------------------
 #define		RIGHT_DIRECTION		BIT1;
 #define		RIGHT_ENABLE		BIT0;
+#define		RIGHT_PWM			BIT2;
 
 #define		LEFT_DIRECTION		BIT5;
 #define		LEFT_ENABLE			BIT3;
 #define		LEFT_PWM			BIT4;
 
-//#define		LEFT_FORWARD	P2OUT |= BIT0;
-//#define		LEFT_BACKWARD	P2OUT &= ~BIT0;
-#define		ENABLE_RIGHT	P2OUT |= RIGHT_ENABLE;
-#define		DISABLE_RIGHT	P2OUT &= ~RIGHT_ENABLE;
-#define		RIGHT_FORWARD	P2OUT &= ~RIGHT_DIRECTION;
-#define		RIGHT_BACKWARD	P2OUT |= RIGHT_DIRECTION;
+#define		ENABLE_RIGHT		P2OUT |= RIGHT_ENABLE;
+#define		DISABLE_RIGHT		P2OUT &= ~RIGHT_ENABLE;
+#define		RIGHT_FORWARD		P2OUT &= ~RIGHT_DIRECTION;
+#define		RIGHT_BACKWARD		P2OUT |= RIGHT_DIRECTION;
 
-#define		ENABLE_LEFT		P2OUT |= LEFT_ENABLE;
-#define		DISABLE_LEFT	P2OUT &= ~LEFT_ENABLE;
-#define		LEFT_FORWARD	P2OUT |= LEFT_DIRECTION;
-#define		LEFT_BACKWARD	P2OUT &= ~LEFT_DIRECTION;
+#define		ENABLE_LEFT			P2OUT |= LEFT_ENABLE;
+#define		DISABLE_LEFT		P2OUT &= ~LEFT_ENABLE;
+#define		LEFT_FORWARD		P2OUT |= LEFT_DIRECTION;
+#define		LEFT_BACKWARD		P2OUT &= ~LEFT_DIRECTION;
+
+#define		S2_BUTTON			P1IN & BIT3
 
 //-----------------------------------------------------------------
 // Each PxIES bit selects the interrupt edge for the corresponding I/O pin.
@@ -76,7 +81,7 @@ __interrupt void timerOverflow (void);
 #define		HIGH_2_LOW		P2IES |= BIT6
 #define		LOW_2_HIGH		P2IES &= ~BIT6
 
-
+//Remote Timing constants
 #define		averageLogic0Pulse	540		//0x0200
 #define		averageLogic1Pulse	540*3	//0x0645
 #define		averageStartPulse	4433	//hi only	//low and hi = 13336	//0x1100
@@ -87,6 +92,7 @@ __interrupt void timerOverflow (void);
 #define		minStartPulse		averageStartPulse - 500
 #define		maxStartPulse		averageStartPulse + 500
 
+//Remote Control Button Codes
 #define		POWER				0x2CD3750A
 #define		STOP				0x2CD37807
 #define		ZERO				0x2CD3057A
@@ -101,6 +107,11 @@ __interrupt void timerOverflow (void);
 #define		LITTLE_DOWN			0x2CD3354A
 #define		LITTLE_LEFT			0x2CD36D12
 #define		LITTLE_RIGHT		0x2CD3314E
+#define		TOP_RIGHT			0x2CD3641B
+#define		TOP_LEFT			0xACD37C03
+#define		BOTTOM_RIGHT		0xACD3700F
+#define		BOTTOM_LEFT			0xACD3740B
+
 
 //Mask the 4xMSB of the remote code due to the AC vs 2C inconsistency
 #define		IS_ONE				(0x0000FFFF & packetBits) == (0x0000FFFF & ONE)
@@ -116,5 +127,9 @@ __interrupt void timerOverflow (void);
 #define		IS_LITTLE_DOWN		(0x0000FFFF & packetBits) == (0x0000FFFF & LITTLE_DOWN)
 #define		IS_LITTLE_LEFT		(0x0000FFFF & packetBits) == (0x0000FFFF & LITTLE_LEFT)
 #define		IS_LITTLE_RIGHT		(0x0000FFFF & packetBits) == (0x0000FFFF & LITTLE_RIGHT)
+#define		IS_TOP_LEFT			(0x0000FFFF & packetBits) == (0x0000FFFF & TOP_LEFT)
+#define		IS_TOP_RIGHT		(0x0000FFFF & packetBits) == (0x0000FFFF & TOP_RIGHT)
+#define		IS_BOTTOM_LEFT		(0x0000FFFF & packetBits) == (0x0000FFFF & BOTTOM_LEFT)
+#define		IS_BOTTOM_RIGHT		(0x0000FFFF & packetBits) == (0x0000FFFF & BOTTOM_RIGHT)
 
 #endif /* LAB6_H_ */

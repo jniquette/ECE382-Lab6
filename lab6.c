@@ -17,26 +17,42 @@ void main(void) {
 
 	initMSP430();				// Setup MSP to process IR and buttons
 
-
-	reqFunctionality();
-
-
-
 	while(1)  {
+
+		//Demo Required Functionality
+		if (S2_BUTTON == 0) {
+			while(S2_BUTTON == 0);
+			reqFunctionality();
+		}
 
 		if (newIrPacket) {	//Got a new packet!
 			_disable_interrupt();
 			newIrPacket = FALSE;
 			packetIndex = 0;
 
-			if(IS_ONE){
-				rightForward();
-				leftForward();
-			}
-			else if(IS_TWO){
-				rightBackward();
-				leftBackward();
-			}
+			//Demo Required Functionality
+			if(IS_ONE)			reqFunctionality();
+
+			//The all important stops
+			if(IS_POWER || IS_STOP)	stop();
+
+			//Indefinite Movements
+			if(IS_BIG_UP)		goForward();
+			if(IS_BIG_DOWN)		goBackward();
+			if(IS_BIG_LEFT)		turnLeft();
+			if(IS_BIG_RIGHT)	turnRight();
+
+			//Stepping Movements
+			if(IS_LITTLE_UP)		stepForward();
+			if(IS_LITTLE_DOWN)		stepBackward();
+			if(IS_LITTLE_LEFT)		stepLeft();
+			if(IS_LITTLE_RIGHT)		stepRight();
+
+			//Pivot/Wheel Movements
+			if(IS_TOP_LEFT)				pivotForwardLeft();
+			if(IS_TOP_RIGHT)			pivotForwardRight();
+			if(IS_BOTTOM_LEFT)			pivotBackwardLeft();
+			if(IS_BOTTOM_RIGHT)			pivotBackwardRight();
 
 			_enable_interrupt();
 
@@ -68,17 +84,17 @@ void initMSP430() {
 	BCSCTL1 = CALBC1_8MHZ;
 	DCOCTL = CALDCO_8MHZ;
 
+	//IR Input
 	P2SEL  &= ~BIT6;						// Setup P2.6 as GPIO not XIN
 	P2SEL2 &= ~BIT6;
 	P2DIR &= ~BIT6;
 	P2IFG &= ~BIT6;						// Clear any interrupt flag
 	P2IE  |= BIT6;						// Enable PORT 2 interrupt on pin change
 
-	//Enable Outputs on Motor Output Pins
-//	P2DIR |= LEFT_MOTOR_POS;
-//	P2DIR |= LEFT_MOTOR_NEG;
-//	P2DIR |= RIGHT_MOTOR_POS;
-//	P2DIR |= RIGHT_MOTOR_NEG;
+	//HW Button Input
+	P2SEL  &= ~BIT6;						// Setup P2.6 as GPIO not XIN
+	P2SEL2 &= ~BIT6;
+	P2DIR &= ~BIT6;
 
 	//Enable Motor Outputs
 	P2DIR |= BIT0 | BIT1;			//Right Motor Enable and Direction
