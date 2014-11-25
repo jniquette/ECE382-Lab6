@@ -11,3 +11,6 @@ The second issue that I had was an unexpected rapid overheating of the SN754410 
 I did have the right motor working with forwards and backwards support. When I attempted to get the left motor wired up, I blew a fuse. I backed down to what I had before, and the motor would run for about three seconds before blowing another fuse. I attempted to reproduce exactly what I had to get just the right motor working, and the fuses continued to blow. After ~5 hours in the lab tonight I've given up for the evening.
 
 On Monday night I was having some issues getting the left motor to work properly. After running through my code I saw that I had pins 2.0 and 2.1 (right motor enable and direction, respectively) set as output, but I had not yet configured pins 2.3 and 2.5 (left motor enable and direction, respectively). This was causing my left motor to work only intermittently. After correcting this I achieved required functionality. This was probably related to the earlier issue of getting an output of ~1.9V on these two pins.
+
+
+A Functionality Youtube Video Link: https://www.youtube.com/watch?v=hhUQ_j3tiYA&list=UUAXhf3d2OrbDpP-IZgnnAvQ
