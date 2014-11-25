@@ -18,7 +18,7 @@ void main(void) {
 	initMSP430();				// Setup MSP to process IR and buttons
 
 
-
+	reqFunctionality();
 
 
 
@@ -43,6 +43,49 @@ void main(void) {
 		} // end if new IR packet arrived
 	} // end infinite loop
 } // end main
+
+void stop(){
+	DISABLE_RIGHT;
+	DISABLE_LEFT;
+}
+
+void stepForward(){
+	goForward();
+	__delay_cycles(2000000);
+	stop();
+}
+
+void stepRight(){
+	turnRight();
+	__delay_cycles(2000000);
+	stop();
+}
+
+void stepLeft(){
+	turnLeft();
+	__delay_cycles(2000000);
+	stop();
+}
+
+void goForward(){
+	rightForward();
+	leftForward();
+}
+
+void goBackward(){
+	rightBackward();
+	leftBackward();
+}
+
+void turnRight(){
+	rightBackward();
+	leftForward();
+}
+
+void turnLeft(){
+	leftBackward();
+	rightForward();
+}
 
 void rightForward(){
 	P1OUT |= BIT6;		//Green On
@@ -70,6 +113,15 @@ void leftBackward(){
 	LEFT_BACKWARD;
 	ENABLE_LEFT;
 	TA1CCTL2 = OUTMOD_3;
+}
+
+void reqFunctionality(){
+	stepForward();
+	stepBackward();
+	stepRight();
+	stepLeft();
+	stepForward();
+	stepBackward();
 }
 
 
