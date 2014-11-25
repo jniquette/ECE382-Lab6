@@ -87,19 +87,34 @@ __interrupt void timerOverflow (void);
 #define		minStartPulse		averageStartPulse - 500
 #define		maxStartPulse		averageStartPulse + 500
 
-#define		POWER		0x2CD3750A
-#define		ZERO		0x2CD3057A
-#define		ONE			0x2CD32D52
-#define		TWO			0x2CD33D42
-#define		THREE		0x2CD33946
-
-#define		BIG_UP		0x2CD36C13
-#define		BIG_DOWN	0xACD3601F
-#define		BIG_LEFT	0xACD3304F
-#define		BIG_RIGHT	0xACD3205F
+#define		POWER				0x2CD3750A
+#define		STOP				0x2CD37807
+#define		ZERO				0x2CD3057A
+#define		ONE					0x2CD32D52
+#define		TWO					0x2CD33D42
+#define		THREE				0x2CD33946
+#define		BIG_UP				0x2CD36C13
+#define		BIG_DOWN			0xACD3601F
+#define		BIG_LEFT			0xACD3304F
+#define		BIG_RIGHT			0xACD3205F
+#define		LITTLE_UP			0xACD37906
+#define		LITTLE_DOWN			0x2CD3354A
+#define		LITTLE_LEFT			0x2CD36D12
+#define		LITTLE_RIGHT		0x2CD3314E
 
 //Mask the 4xMSB of the remote code due to the AC vs 2C inconsistency
-#define		IS_ONE		(0x0000FFFF & packetBits) == (0x0000FFFF & ONE)
-#define		IS_TWO		(0x0000FFFF & packetBits) == (0x0000FFFF & TWO)
+#define		IS_ONE				(0x0000FFFF & packetBits) == (0x0000FFFF & ONE)
+#define		IS_TWO				(0x0000FFFF & packetBits) == (0x0000FFFF & TWO)
+#define		IS_THREE			(0x0000FFFF & packetBits) == (0x0000FFFF & THREE)
+#define		IS_POWER			(0x0000FFFF & packetBits) == (0x0000FFFF & POWER)
+#define		IS_STOP				(0x0000FFFF & packetBits) == (0x0000FFFF & STOP)
+#define		IS_BIG_UP			(0x0000FFFF & packetBits) == (0x0000FFFF & BIG_UP)
+#define		IS_BIG_DOWN			(0x0000FFFF & packetBits) == (0x0000FFFF & BIG_DOWN)
+#define		IS_BIG_LEFT			(0x0000FFFF & packetBits) == (0x0000FFFF & BIG_LEFT)
+#define		IS_BIG_RIGHT		(0x0000FFFF & packetBits) == (0x0000FFFF & BIG_RIGHT)
+#define		IS_LITTLE_UP		(0x0000FFFF & packetBits) == (0x0000FFFF & LITTLE_UP)
+#define		IS_LITTLE_DOWN		(0x0000FFFF & packetBits) == (0x0000FFFF & LITTLE_DOWN)
+#define		IS_LITTLE_LEFT		(0x0000FFFF & packetBits) == (0x0000FFFF & LITTLE_LEFT)
+#define		IS_LITTLE_RIGHT		(0x0000FFFF & packetBits) == (0x0000FFFF & LITTLE_RIGHT)
 
 #endif /* LAB6_H_ */
