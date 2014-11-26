@@ -1,9 +1,11 @@
-/*
- * lab6.h
- *
- *  Created on: Nov 19, 2014
- *      Author: C16Justin.Niquette
- */
+//-----------------------------------------------------------------
+// Name:	C2C Justin Niquette
+// File:	lab6.h
+// Date:	25 Nov 2014
+// Purp:	Contains method declarations, constants, macros, and
+//			Remote control codes for interfacing with the MSP430
+//			Robot.
+//-----------------------------------------------------------------
 
 #ifndef LAB6_H_
 #define LAB6_H_

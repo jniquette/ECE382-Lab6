@@ -1,3 +1,12 @@
+//-----------------------------------------------------------------
+// Name:	C2C Justin Niquette
+// File:	movements.c
+// Date:	25 Nov 2014
+// Purp:	Contains the methods for each maneuver of the MSP430
+//			Robot.
+//-----------------------------------------------------------------
+
+
 #include <msp430g2553.h>
 #include "lab6.h"
 

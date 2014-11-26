@@ -1,8 +1,8 @@
 //-----------------------------------------------------------------
-// Name:	Coulston
-// File:	lab5.c
-// Date:	Fall 2014
-// Purp:	Demo the decoding of an IR packet
+// Name:	C2C Justin Niquette
+// File:	lab6.c
+// Date:	25 Nov 2014
+// Purp:	Main methods for controlling the MSP430 Robot
 //-----------------------------------------------------------------
 #include <msp430g2553.h>
 #include "lab6.h"
@@ -11,15 +11,14 @@ int8	newIrPacket = FALSE;
 int32	packetBits;
 int8	packetIndex = 0;
 
-// -----------------------------------------------------------------------
-// -----------------------------------------------------------------------
+
 void main(void) {
 
-	initMSP430();				// Setup MSP to process IR and buttons
+	initMSP430();			// Setup MSP to process IR, buttons, and timers
 
 	while(1)  {
 
-		//Demo Required Functionality
+		//Demo Required Functionality on release of held S2 button
 		if (S2_BUTTON == 0) {
 			while(S2_BUTTON == 0);
 			reqFunctionality();
@@ -31,16 +30,16 @@ void main(void) {
 			packetIndex = 0;
 
 			//Demo Required Functionality
-			if(IS_ONE)			reqFunctionality();
+			if(IS_ONE)				reqFunctionality();
 
 			//The all important stops
 			if(IS_POWER || IS_STOP)	stop();
 
 			//Indefinite Movements
-			if(IS_BIG_UP)		goForward();
-			if(IS_BIG_DOWN)		goBackward();
-			if(IS_BIG_LEFT)		turnLeft();
-			if(IS_BIG_RIGHT)	turnRight();
+			if(IS_BIG_UP)			goForward();
+			if(IS_BIG_DOWN)			goBackward();
+			if(IS_BIG_LEFT)			turnLeft();
+			if(IS_BIG_RIGHT)		turnRight();
 
 			//Stepping Movements
 			if(IS_LITTLE_UP)		stepForward();
@@ -49,10 +48,10 @@ void main(void) {
 			if(IS_LITTLE_RIGHT)		stepRight();
 
 			//Pivot/Wheel Movements
-			if(IS_TOP_LEFT)				pivotForwardLeft();
-			if(IS_TOP_RIGHT)			pivotForwardRight();
-			if(IS_BOTTOM_LEFT)			pivotBackwardLeft();
-			if(IS_BOTTOM_RIGHT)			pivotBackwardRight();
+			if(IS_TOP_LEFT)			pivotForwardLeft();
+			if(IS_TOP_RIGHT)		pivotForwardRight();
+			if(IS_BOTTOM_LEFT)		pivotBackwardLeft();
+			if(IS_BOTTOM_RIGHT)		pivotBackwardRight();
 
 			_enable_interrupt();
 
@@ -84,44 +83,43 @@ void initMSP430() {
 	BCSCTL1 = CALBC1_8MHZ;
 	DCOCTL = CALDCO_8MHZ;
 
-	//IR Input
+	//IR Input and interrupt enable
 	P2SEL  &= ~BIT6;						// Setup P2.6 as GPIO not XIN
 	P2SEL2 &= ~BIT6;
 	P2DIR &= ~BIT6;
 	P2IFG &= ~BIT6;						// Clear any interrupt flag
 	P2IE  |= BIT6;						// Enable PORT 2 interrupt on pin change
+	HIGH_2_LOW; 						// Setup pin interrupterr on positive edge
 
-	//HW Button Input
-	P2SEL  &= ~BIT6;						// Setup P2.6 as GPIO not XIN
-	P2SEL2 &= ~BIT6;
-	P2DIR &= ~BIT6;
+	//HW Button Input = 1.3
+	P1SEL  &= ~BIT3;
+	P1SEL2 &= ~BIT3;
+	P1DIR &= ~BIT3;
 
 	//Enable Motor Outputs
 	P2DIR |= BIT0 | BIT1;			//Right Motor Enable and Direction
 	P2DIR |= BIT3 | BIT5;			//Right Motor Enable and Direction
 	
-	//Enable the LEDs and turn them on (so I can see that the MSP is working)
-	P1DIR |= BIT0 | BIT6;				// Enable updates to the LED
-	P1OUT |= (BIT0 | BIT6);			// And turn the LEDa on
+	//Enable the LEDs and turn them on for motor direction indicators
+	P1DIR |= BIT0 | BIT6;			// Enable updates to the LED
+	P1OUT |= BIT0 | BIT6;			// And turn the LEDa on
 
-	//Setup Timer A0
+	//Setup Timer A0 for IR input
 	TA0CCR0 = 0x8000;					// create a 16mS roll-over period
 	TA0CTL &= ~TAIFG;					// clear flag before enabling interrupts = good practice
-	TA0CTL = ID_3 | TASSEL_2 | MC_1;		// Use 1:1 presclar off MCLK and enable interrupts
+	TA0CTL = ID_3 | TASSEL_2 | MC_1;	// Use 1:1 presclar off MCLK and enable interrupts
 
-	//Setup Timer A1 and PWM
+	//Setup Timer A1 for motor output PWM
     P2DIR |= BIT2;							// P2.2 is associated with TA1CCR1
     P2SEL |= BIT2;							// P2.2 is associated with TA1CCTL1
     P2DIR |= BIT4;							// P2.4 is associated with TA1CCR2
     P2SEL |= BIT4;							// P2.4 is associated with TA1CCTL2
 	TA1CTL = ID_3 | TASSEL_2 | MC_1;		// Use 1:8 presclar off MCLK
     TA1CCR0 = 0x0100;						// set signal period
-    TA1CCR1 = 0x0008;//20;
-    TA1CCTL1 = OUTMOD_7;				// set TACCTL1 to Reset / Set mode
-    TA1CCR2 = 0x0008;//20;
+    TA1CCR1 = 0x0008;						// Set an appropriate duty cycle
+    TA1CCTL1 = OUTMOD_7;					// set TACCTL1 to Reset / Set mode
+    TA1CCR2 = 0x0008;						// set an appropriate duty cycle
     TA1CCTL2 = OUTMOD_7;					// set TACCTL1 to Reset / Set mode
-
-	HIGH_2_LOW; 						// Setup pin interrupr on positive edge
 
 	_enable_interrupt();
 }
@@ -161,14 +159,14 @@ __interrupt void pinChange (void) {
 
 	if(packetIndex >= 31){
 		newIrPacket = TRUE;
-		P2IFG &= ~BIT6;			// Clear the interrupt flag to prevent immediate ISR re-entry
+		P2IFG &= ~BIT6;				// Clear the interrupt flag to prevent immediate ISR re-entry
 		return;
 	}
 
 	if (IR_PIN)		pin=1;	else pin=0;
 
 	switch (pin) {					// read the current pin level
-	case 0:						// !!!!!!!!!NEGATIVE EDGE!!!!!!!!!!
+	case 0:							// !!!!!!!!!NEGATIVE EDGE!!!!!!!!!!
 		pulseDuration = TAR;
 		packetIndex++;
 		if(minStartPulse < pulseDuration && pulseDuration < maxStartPulse){
@@ -197,24 +195,21 @@ __interrupt void pinChange (void) {
 		//Enable Interrupt for timer A
 		P2IE |= ID_3;
 
-		TAR = 0x0000;						// time measurements are based at time 0
-		HIGH_2_LOW; 						// Setup pin interrupr on positive edge
+		TAR = 0x0000;				// time measurements are based at time 0
+		HIGH_2_LOW; 				// Setup pin interrupr on positive edge
 		break;
 	} // end switch
 
-	P2IFG &= ~BIT6;			// Clear the interrupt flag to prevent immediate ISR re-entry
+	P2IFG &= ~BIT6;					// Clear the interrupt flag to prevent immediate ISR re-entry
 
 } // end pinChange ISR
 
 
 
 // -----------------------------------------------------------------------
-//			0 half-bit	1 half-bit		TIMER A COUNTS		TIMER A COUNTS
-//	Logic 0	xxx
-//	Logic 1
-//	Start
-//	End
-//
+//	Interrupt for the timeout of reading a IR code. When we get here we
+//	Should have a 32-bit remote code. Now when the main loop polls the
+//	newIrPacket variable, it'll be able to execute the appropriate method.
 // -----------------------------------------------------------------------
 #pragma vector = TIMER0_A1_VECTOR			// This is from the MSP430G2553.h file
 __interrupt void timerOverflow (void) {
@@ -230,6 +225,6 @@ __interrupt void timerOverflow (void) {
 	//Set new Packet to true
 	newIrPacket = TRUE;
 
-	//Clear TAIFG
+	//Clear TAIFG (Timer A Interrupt Flag)
 	TA0CTL &= ~TAIFG;
 }
