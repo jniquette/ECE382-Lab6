@@ -18,7 +18,7 @@ The prelab was graded in class with a score of 11/15.
 There are two placement options for the MSP430 for this lab. The first is to leave the MSP430 on the launchpad and then wire the pins of the MSP430 to the breadboard. The second option is to remove the MSP430 from the launchpad and place it on the breadboard, running wires for VCC, TEST, and RESET between the Launchpad and the MSP430. Because I knew that I was going to want to use the two LEDs built into the Launchpad, and because I think it looks cleaner to do so, I opted to leave the MSP430 installed in the Launchpad.
 
 ###Hardware Schematic
-![alt text](https://github.com/jniquette/ECE382-Lab1/blob/master/images/schematic.jpg "Hardware Schematic")
+![alt text](https://github.com/jniquette/ECE382-Lab6/blob/master/images/schematic.jpg "Hardware Schematic")
 
 ##Debugging
 
@@ -32,7 +32,7 @@ On Monday night I was having some issues getting the left motor to work properly
 
 ##Final Results
 This photo shows the completed wiring for the robot.
-![alt text](https://github.com/jniquette/ECE382-Lab1/blob/master/images/wiring.jpg "Completed Wiring")
+![alt text](https://github.com/jniquette/ECE382-Lab6/blob/master/images/wiring.jpg "Completed Wiring")
 
 ##Functionality
 
