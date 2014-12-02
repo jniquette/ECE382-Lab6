@@ -11,13 +11,14 @@ The prelab was graded in class with a score of 11/15.
 - 1x [LDV33 3.3V Regulator Datasheet](http://ece382.com/datasheets/LD1117V33.pdf)
 - 4x 0.1uF disc capacitor, two per motor
 - 2x 10uF elec. capacitor, one for each voltage rail
+- 1x TSOP34838 Vishay IR Receiver, 45M, 950NM
 
 ###Wiring
 
 There are two placement options for the MSP430 for this lab. The first is to leave the MSP430 on the launchpad and then wire the pins of the MSP430 to the breadboard. The second option is to remove the MSP430 from the launchpad and place it on the breadboard, running wires for VCC, TEST, and RESET between the Launchpad and the MSP430. Because I knew that I was going to want to use the two LEDs built into the Launchpad, and because I think it looks cleaner to do so, I opted to leave the MSP430 installed in the Launchpad.
 
 ###Hardware Schematic
-Email the schematic to myself.
+![alt text](https://github.com/jniquette/ECE382-Lab1/blob/master/images/schematic.jpg "Hardware Schematic")
 
 ##Debugging
 
@@ -29,8 +30,25 @@ I did have the right motor working with forwards and backwards support. When I a
 
 On Monday night I was having some issues getting the left motor to work properly. After running through my code I saw that I had pins 2.0 and 2.1 (right motor enable and direction, respectively) set as output, but I had not yet configured pins 2.3 and 2.5 (left motor enable and direction, respectively). This was causing my left motor to work only intermittently. After correcting this I achieved required functionality. This was probably related to the earlier issue of getting an output of ~1.9V on these two pins.
 
-##Required Functionality and A Functionality
+##Final Results
+This photo shows the completed wiring for the robot.
+![alt text](https://github.com/jniquette/ECE382-Lab1/blob/master/images/wiring.jpg "Completed Wiring")
+
+##Functionality
+
+###Required Functionality
+Demonstrate movement forward, backward, a small (< 45 degree) turn left and right, and a large (> 45 dgree) turn left and right. The robot should perform these movements sequentially, completely disconnected from a computer (no USB cord).
+
+###A Functionality
+Control your robot with your remote! You should use at least four different buttons on the remote: one each to indicate motion directions of forward, backward, left, and right.
+
+###Video Proof
 Both functionalities are demonstrated in this [Youtube Video](https://www.youtube.com/watch?v=hhUQ_j3tiYA&list=UUAXhf3d2OrbDpP-IZgnnAvQ)
+
+##Lessons Learned
+- Read the Tech Doc
+- Double check coding to ensure that inputs and outputs are set correctly.
+- If you think the chip is bad, and it isn't due to one of the two things above, it's probably bad.
 
 ##Documentation
 C2C El-Saawy and Dr. Coulston helped me deduce my wiring issues. I used C2C Yarbrough's Readme as a guideline for what types of content I should include.
